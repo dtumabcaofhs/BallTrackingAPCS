@@ -5,12 +5,14 @@ import core.DImage;
 
 import java.util.ArrayList;
 
-public class BallTracking implements PixelFilter {
+public class BallTrack implements PixelFilter {
     ArrayList<PixelFilter> filters = new ArrayList<>();
 
-    public BallTracking(){
-        PixelFilter ColorClustering = new ColorMasking();
-        filters.add(ColorClustering);
+    public BallTrack(){
+        PixelFilter colorMask = new ColorMask();
+        filters.add(colorMask);
+        PixelFilter clustering = new ColorClustering();
+        //filters.add(clustering);
     }
 
     @Override
