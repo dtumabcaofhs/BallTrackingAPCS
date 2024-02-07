@@ -13,6 +13,12 @@ public class ColorMask implements PixelFilter {
         bT = Double.parseDouble(JOptionPane.showInputDialog("Enter blue value (0-255):"));
         distThreshold = Double.parseDouble(JOptionPane.showInputDialog("Enter difference threshold value (integer):"));
     }
+
+    public ColorMask(int r, int g, int b){
+        rT = r;
+        gT = g;
+        bT = b;
+    }
     @Override
     public DImage processImage(DImage img) {
         short[][] red = img.getRedChannel();
