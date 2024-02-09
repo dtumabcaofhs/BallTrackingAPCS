@@ -6,18 +6,18 @@ import core.DImage;
 import javax.swing.*;
 
 public class ColorMask implements PixelFilter {
-    double rT, gT, bT, distThreshold;
+    double targetRed, targetGreen, targetBlue, distThreshold;
     public ColorMask(){
-        rT = Double.parseDouble(JOptionPane.showInputDialog("Enter red value (0-255):"));
-        gT = Double.parseDouble(JOptionPane.showInputDialog("Enter green value (0-255):"));
-        bT = Double.parseDouble(JOptionPane.showInputDialog("Enter blue value (0-255):"));
+        targetRed = Double.parseDouble(JOptionPane.showInputDialog("Enter red value (0-255):"));
+        targetGreen = Double.parseDouble(JOptionPane.showInputDialog("Enter green value (0-255):"));
+        targetBlue = Double.parseDouble(JOptionPane.showInputDialog("Enter blue value (0-255):"));
         distThreshold = Double.parseDouble(JOptionPane.showInputDialog("Enter difference threshold value (integer):"));
     }
 
-    public ColorMask(int r, int g, int b){
-        rT = r;
-        gT = g;
-        bT = b;
+    public ColorMask(int targetRed, int targetGreen, int targetBlue){
+        this.targetRed = targetRed;
+        this.targetGreen = targetGreen;
+        this.targetBlue = targetBlue;
     }
     @Override
     public DImage processImage(DImage img) {
@@ -29,7 +29,7 @@ public class ColorMask implements PixelFilter {
 
         for (int r = 0; r < red.length; r++) {
             for (int c = 0; c < red[r].length; c++) {
-                double dist = Math.sqrt(Math.pow(Math.abs(rT-red[r][c]),2) + Math.pow(Math.abs(gT-green[r][c]),2) + Math.pow(Math.abs(bT-blue[r][c]),2));
+                double dist = Math.sqrt(Math.pow(Math.abs(targetRed -red[r][c]),2) + Math.pow(Math.abs(targetGreen -green[r][c]),2) + Math.pow(Math.abs(targetBlue -blue[r][c]),2));
                 if(dist > distThreshold){
                     grayscale[r][c] = 0;
                 }else{
