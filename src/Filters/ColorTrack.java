@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class ColorTrack implements PixelFilter, Drawable, Interactive {
     //Made by Dean Tumabcao using D. Dobervich's VideoFilter code.
     private Pixel c;
-    private int k = 3, clusterCalibrationAmt = 50;
+    private int k = 3, clusterCalibrationAmt = 10;
     private ColorMask selectedColorMask;
     private ArrayList<ColorMask> colorMasks = new ArrayList<>();
     private ArrayList<ColorPoint> targetColorPoints = new ArrayList<>();
@@ -19,46 +19,49 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
     private ArrayList<PixelCluster> filledPixelClusters = new ArrayList<>();
     private ArrayList<Pixel> pixels = new ArrayList<>();
     private boolean drawClusterCenter = false;
+    DImage coloredOverlay;
 
     public ColorTrack(){
         addTargetColors();
         makeColorMasks();
     }
 
-    @Override
-    public DImage processImage(DImage img) {
-        short[][] newBW = img.getBWPixelGrid();
-        newBW = findClusterCenter(selectedColorMask,img, newBW);
-        for(ColorMask c : colorMasks){
-            newBW = findClusterCenter(c,img, newBW);
-        }
-
-        img.setPixels(newBW);
-        return img;
-    }
-
     private void addTargetColors() {
-        ColorPoint red = new ColorPoint((short) 255, (short) 0, (short) 0);
+        ColorPoint red = new ColorPoint((short) 154, (short) 110, (short) 89);
         targetColorPoints.add(red);
-        ColorPoint green = new ColorPoint((short) 0, (short) 255, (short) 0);
+        ColorPoint green = new ColorPoint((short) 77, (short) 132, (short) 64);
         targetColorPoints.add(green);
-        ColorPoint blue = new ColorPoint((short) 0, (short) 0, (short) 255);
+        ColorPoint blue = new ColorPoint((short) 5, (short) 30, (short) 110);
         targetColorPoints.add(blue);
-        ColorPoint yellow = new ColorPoint((short) 255, (short) 255, (short) 0);
+        ColorPoint yellow = new ColorPoint((short) 253, (short) 231, (short) 130);
         targetColorPoints.add(yellow);
-        ColorPoint orange = new ColorPoint((short) 255, (short) 127, (short) 0);
-        targetColorPoints.add(orange);
     }
 
     private void makeColorMasks() {
         for(ColorPoint c : targetColorPoints){
             ColorMask colorMask = new ColorMask(c.r,c.g,c.b);
-            System.out.println("Color mask"+c.r+" "+c.g+" "+c.b+" ");
+            System.out.println("DEV: Added color mask: ["+c.r+","+c.g+","+c.b+"]");
             colorMasks.add(colorMask);
         }
     }
 
-    private short[][] findClusterCenter(ColorMask colorMask, DImage img, short[][] newBW){
+    @Override
+    public DImage processImage(DImage img) {
+        short[][] newBW = img.getBWPixelGrid();
+
+        short[][] newMaskR = img.getRedChannel();
+        short[][] newMaskG = img.getGreenChannel();
+        short[][] newMaskB = img.getBlueChannel();
+
+        img = findColorCentersMakeNewImg(selectedColorMask,img, newMaskR,newMaskG,newMaskB);
+        for(ColorMask c : colorMasks){
+            img = findColorCentersMakeNewImg(c,img, newMaskR,newMaskG,newMaskB);
+        }
+
+        return img;
+    }
+
+    private DImage findColorCentersMakeNewImg(ColorMask colorMask, DImage img, short[][] newMaskR, short[][] newMaskG, short[][] newMaskB){
         if(colorMask != null){
             img = colorMask.processImage(img);
             clusterPixels(img);
@@ -68,13 +71,15 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
             for (int r = 0; r < newImg.length; r++) {
                 for (int c = 0; c < newImg[r].length; c++) {
                     if(newImg[r][c] == 255){
-                        newBW[r][c] = 255;
+                        newMaskR[r][c] = (short) colorMask.targetRed;
+                        newMaskG[r][c] = (short) colorMask.targetGreen;
+                        newMaskB[r][c] = (short) colorMask.targetBlue;
                     }
                 }
             }
         }
 
-        return newBW;
+        return img;
     }
 
 
