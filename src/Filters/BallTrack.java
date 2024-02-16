@@ -8,7 +8,7 @@ import processing.core.PApplet;
 
 import java.util.ArrayList;
 
-public class ColorTrack implements PixelFilter, Drawable, Interactive {
+public class BallTrack implements PixelFilter, Drawable, Interactive {
     //Made by Dean Tumabcao using D. Dobervich's VideoFilter code.
     private Pixel c;
     private int k = 3, clusterCalibrationAmt = 10;
@@ -21,7 +21,7 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
     private boolean drawClusterCenter = false;
     DImage coloredOverlay;
 
-    public ColorTrack(){
+    public BallTrack(){
         addTargetColors();
         makeColorMasks();
     }
@@ -29,9 +29,9 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
     private void addTargetColors() {
         ColorPoint red = new ColorPoint((short) 154, (short) 110, (short) 89);
         targetColorPoints.add(red);
-        ColorPoint green = new ColorPoint((short) 77, (short) 132, (short) 64);
+        ColorPoint green = new ColorPoint((short) 81, (short) 170, (short) 91);
         targetColorPoints.add(green);
-        ColorPoint blue = new ColorPoint((short) 5, (short) 30, (short) 110);
+        ColorPoint blue = new ColorPoint((short) 25, (short) 77, (short) 186);
         targetColorPoints.add(blue);
         ColorPoint yellow = new ColorPoint((short) 253, (short) 231, (short) 130);
         targetColorPoints.add(yellow);
@@ -78,7 +78,7 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
                 }
             }
         }
-
+        img.setColorChannels(newMaskR,newMaskG,newMaskB);
         return img;
     }
 
@@ -173,6 +173,8 @@ public class ColorTrack implements PixelFilter, Drawable, Interactive {
                 g = green[mouseY][mouseX];
                 short[][] blue = img.getBlueChannel();
                 b = blue[mouseY][mouseX];
+
+                System.out.println("DEV: Added clicked color mask: ["+r+","+g+","+b+"]");
 
                 if(selectedColorMask == null){
                     selectedColorMask = new ColorMask(r,g,b);
